@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minecraft Mods & Skins</title>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+    <link rel="stylesheet" href="style.css">
 
-        // Firebase Configuration (Replace with Your Firebase Details)
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js"></script>
+
+    <!-- Firebase Config -->
+    <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDeKe7IYBRcprqTdGQ_FeYA517dTBnsJ9k",
             authDomain: "mine-hub.firebaseapp.com",
@@ -18,70 +21,30 @@
             storageBucket: "mine-hub.firebasestorage.app",
             messagingSenderId: "261499345758",
             appId: "1:261499345758:web:eac776fd4aac8486104dcf"
-            measurementId: "G-4VFX5L56V8"
         };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const storage = getStorage(app);
-        const provider = new GoogleAuthProvider();
-
-        // Google Sign-in Function
-        document.getElementById("login-btn").addEventListener("click", async () => {
-            try {
-                const result = await signInWithPopup(auth, provider);
-                const user = result.user;
-                document.getElementById("user-info").innerHTML = `Logged in as: ${user.displayName}`;
-            } catch (error) {
-                console.error(error.message);
-            }
-        });
-
-        // Logout Function
-        document.getElementById("logout-btn").addEventListener("click", async () => {
-            await signOut(auth);
-            document.getElementById("user-info").innerHTML = "Logged out";
-        });
-
-        // Upload File Function
-        document.getElementById("upload-btn").addEventListener("change", async (event) => {
-            const file = event.target.files[0];
-            const fileRef = ref(storage, `uploads/${file.name}`);
-            await uploadBytes(fileRef, file);
-            const downloadURL = await getDownloadURL(fileRef);
-            
-            await addDoc(collection(db, "uploads"), {
-                name: file.name,
-                url: downloadURL
-            });
-
-            alert("File uploaded!");
-        });
-
-        // Fetch and Display Uploaded Files
-        async function fetchUploads() {
-            const querySnapshot = await getDocs(collection(db, "uploads"));
-            querySnapshot.forEach((doc) => {
-                document.getElementById("uploads-list").innerHTML += `<li><a href="${doc.data().url}" target="_blank">${doc.data().name}</a></li>`;
-            });
-            <link rel="stylesheet" href="styles.css">
-                <button id="theme-toggle">Toggle Dark Mode</button>
-        }
-        fetchUploads();
+        firebase.initializeApp(firebaseConfig);
     </script>
 </head>
 <body>
-    <h1>Minecraft Mods & Skins</h1>
-    <p>Upload and share your Minecraft creations!</p>
+    <div class="container">
+        <h1>Minecraft Mods & Skins</h1>
+        <p>Upload and share your Minecraft creations!</p>
 
-    <button id="login-btn">Login with Google</button>
-    <button id="logout-btn">Logout</button>
-    <p id="user-info">Not logged in</p>
+        <div id="auth">
+            <button id="loginBtn">Login with Google</button>
+            <button id="logoutBtn">Logout</button>
+            <p id="userStatus">Not logged in</p>
+        </div>
 
-    <input type="file" id="upload-btn">
-    <h2>Uploaded Mods & Skins:</h2>
-    <ul id="uploads-list"></ul>
+        <div id="uploadSection" class="hidden">
+            <input type="file" id="fileInput">
+            <button id="uploadBtn">Upload</button>
+        </div>
+
+        <h2>Uploaded Mods & Skins:</h2>
+        <div id="uploadsList"></div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
-      </html>
+</html>
