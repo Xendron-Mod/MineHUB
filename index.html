@@ -66,6 +66,7 @@
             querySnapshot.forEach((doc) => {
                 document.getElementById("uploads-list").innerHTML += `<li><a href="${doc.data().url}" target="_blank">${doc.data().name}</a></li>`;
             });
+            <link rel="stylesheet" href="styles.css">
         }
         fetchUploads();
     </script>
