@@ -1,58 +1,100 @@
-/* Global Styling */
-body {
-    font-family: 'Poppins', sans-serif;
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+/* Reset and Global Styles */
+* {
     margin: 0;
     padding: 0;
-    background-color: #1e1e2e;
-    color: #ffffff;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Light and Dark Theme Variables */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #222;
+    --primary-color: #4CAF50;
+    --secondary-color: #e3e3e3;
+    --card-bg: #f5f5f5;
+}
+
+.dark-mode {
+    --bg-color: #121212;
+    --text-color: #f5f5f5;
+    --primary-color: #76ff03;
+    --secondary-color: #242424;
+    --card-bg: #1e1e1e;
+}
+
+/* Body Styling */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: all 0.3s ease-in-out;
+    padding: 20px;
     text-align: center;
 }
 
 /* Header */
 h1 {
-    font-size: 2.5em;
-    margin-top: 20px;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 10px;
 }
 
 /* Buttons */
 button {
-    background: linear-gradient(45deg, #007bff, #00c6ff);
-    border: none;
-    padding: 12px 20px;
-    margin: 10px;
+    background: var(--primary-color);
     color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
     font-size: 1rem;
     cursor: pointer;
-    border-radius: 8px;
     transition: 0.3s;
 }
 
 button:hover {
-    transform: scale(1.05);
-    opacity: 0.9;
+    background: #388e3c;
 }
 
 /* File Upload */
 input[type="file"] {
-    background-color: #282a36;
-    color: #ffffff;
+    display: block;
+    margin: 10px auto;
     padding: 10px;
-    border-radius: 5px;
 }
 
-/* Uploaded List */
-#uploaded-list {
+/* Uploaded Mods & Skins */
+.upload-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
     margin-top: 20px;
-    font-size: 1.2em;
 }
 
-/* Animations */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+/* Mod & Skin Cards */
+.upload-card {
+    background: var(--card-bg);
+    color: var(--text-color);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+    width: 250px;
+    text-align: center;
 }
 
-h1, button, input, #uploaded-list {
-    animation: fadeIn 0.5s ease-in-out;
+.upload-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Dark Mode Toggle */
+#theme-toggle {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    padding: 8px;
+    font-size: 1rem;
 }
