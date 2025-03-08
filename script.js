@@ -1,96 +1,47 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+const auth = firebase.auth();
+const storage = firebase.storage();
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyDeKe7IYBRcprqTdGQ_FeYA517dTBnsJ9k",
-  authDomain: "mine-hub.firebaseapp.com",
-  projectId: "mine-hub",
-  storageBucket: "mine-hub.firebasestorage.app",
-  messagingSenderId: "261499345758",
-  appId: "1:261499345758:web:eac776fd4aac8486104dcf",
-  measurementId: "G-4VFX5L56V8"
-};
+const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const userStatus = document.getElementById("userStatus");
+const uploadSection = document.getElementById("uploadSection");
+const fileInput = document.getElementById("fileInput");
+const uploadBtn = document.getElementById("uploadBtn");
+const uploadsList = document.getElementById("uploadsList");
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
-const provider = new GoogleAuthProvider();
-
-// Select Elements
-const loginBtn = document.getElementById("login-btn");
-const logoutBtn = document.getElementById("logout-btn");
-const usernameDisplay = document.getElementById("username");
-const fileInput = document.getElementById("upload-btn");
-const uploadsList = document.getElementById("uploads-list");
-
-// Google Sign-in
-loginBtn.addEventListener("click", async () => {
-    try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        usernameDisplay.textContent = `Logged in as: ${user.displayName}`;
-        loginBtn.classList.add("hidden");
-        logoutBtn.classList.remove("hidden");
-    } catch (error) {
-        console.error(error.message);
-    }
+// Google Login
+loginBtn.addEventListener("click", () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider)
+        .then(result => {
+            userStatus.innerText = `Logged in as: ${result.user.displayName}`;
+            uploadSection.classList.remove("hidden");
+        })
+        .catch(error => console.error(error));
 });
 
 // Logout
-logoutBtn.addEventListener("click", async () => {
-    await signOut(auth);
-    usernameDisplay.textContent = "";
-    loginBtn.classList.remove("hidden");
-    logoutBtn.classList.add("hidden");
-});
-
-// Upload File
-fileInput.addEventListener("change", async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const fileRef = ref(storage, `uploads/${file.name}`);
-    await uploadBytes(fileRef, file);
-    const downloadURL = await getDownloadURL(fileRef);
-
-    await addDoc(collection(db, "uploads"), {
-        name: file.name,
-        url: downloadURL
+logoutBtn.addEventListener("click", () => {
+    auth.signOut().then(() => {
+        userStatus.innerText = "Not logged in";
+        uploadSection.classList.add("hidden");
     });
-
-    alert("File uploaded!");
-    loadUploads();
 });
 
-// Load Uploaded Files
-async function loadUploads() {
-    uploadsList.innerHTML = "";
-    const querySnapshot = await getDocs(collection(db, "uploads"));
-    querySnapshot.forEach((doc) => {
-        const li = document.createElement("li");
-        li.innerHTML = `<a href="${doc.data().url}" target="_blank">${doc.data().name}</a>`;
-        uploadsList.appendChild(li);
-    });
-}
-
-loadUploads();
-// Dark Mode Toggle
-const themeToggle = document.getElementById("theme-toggle");
-const body = document.body;
-
-themeToggle.addEventListener("click", () => {
-    body.classList.toggle("dark-mode");
-    localStorage.setItem("theme", body.classList.contains("dark-mode") ? "dark" : "light");
+// File Upload to Firebase Storage
+uploadBtn.addEventListener("click", () => {
+    if (fileInput.files.length > 0) {
+        let file = fileInput.files[0];
+        let storageRef = storage.ref("uploads/" + file.name);
+        
+        storageRef.put(file).then(snapshot => {
+            snapshot.ref.getDownloadURL().then(url => {
+                let newItem = document.createElement("p");
+                newItem.innerHTML = `Uploaded: <a href="${url}" target="_blank">${file.name}</a>`;
+                uploadsList.appendChild(newItem);
+            });
+        });
+    } else {
+        alert("Please select a file first!");
+    }
 });
-
-// Load saved theme
-if (localStorage.getItem("theme") === "dark") {
-    body.classList.add("dark-mode");
-}
